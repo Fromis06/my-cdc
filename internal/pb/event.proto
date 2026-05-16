@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package pb;
+
+// Khai báo đường dẫn module để import trong Go
+option go_package = "my-cdc/pb";
+
+enum SourceType {
+  SOURCE_UNKNOWN = 0;
+  SOURCE_POSTGRES = 1;
+  SOURCE_MYSQL = 2;
+  SOURCE_SQLSERVER = 3;
+}
+
+enum Action {
+  UNKNOWN = 0;
+  INSERT = 1;
+  UPDATE = 2;
+  DELETE = 3;
+  COMMIT = 4;
+}
+
+message Checkpoint {
+  oneof offset {
+    uint64 lsn = 1;
+  }
+}
+
+message ChangeEvent {
+  SourceType source_type = 1;
+  Action action = 2;
+  string schema = 3;
+  string table = 4;
+  repeated string key_names = 5;
+  bytes before = 6;
+  bytes after = 7;
+  Checkpoint offset = 8;
+}
